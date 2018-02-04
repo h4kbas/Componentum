@@ -25,7 +25,22 @@ else{
 $_JUST['map'] = new Map($_JUST);
 
 if(is_callable([$_JUST['map']->plugin, $_JUST['method'].$_JUST['map']->action])){
-    call_user_func_array([$_JUST['map']->plugin,  $_JUST['method'].$_JUST['map']->action], isset($_JUST['params']) ? $_JUST['params'] : []);
+    $result = true;
+    foreach($_JUST['map']->map['filter'] as $f => $acs){
+        if(in_array($_JUST['map']->action, $acs)){
+            $f = explode('/', $f);
+            $fname = "Plugins\\{$f[0]}\\Filters\\{$f[1]}";
+            $filter = new $fname();
+            if($r = $filter->handle())
+                $result = $result && $r;
+            else{
+                $filter->fallback();
+                exit;
+            }
+        }
+    }
+    if($result)
+        call_user_func_array([$_JUST['map']->plugin,  $_JUST['method'].$_JUST['map']->action], isset($_JUST['params']) ? $_JUST['params'] : []);
 }
 else
     Route::abort(404);

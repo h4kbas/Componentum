@@ -1,20 +1,20 @@
 <form action="{{form.url}}" method="post" enctype="multipart/form-data">
     {% for name, el in form.elements %}
         {% if el.type == "Text" %} 
-            {{ include("Util/Fields/Text.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Text.html", {'name':name, 'el':el, 'data':form.data})}}
         {% elseif el.type == "Password" %} 
-            {{ include("Util/Fields/Password.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Password.html", {'name':name, 'el':el, 'data':form.data})}}
         {% elseif el.type == "Number" %} 
-            {{ include("Util/Fields/Number.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Number.html", {'name':name, 'el':el, 'data':form.data})}}
         {% elseif el.type == "Textarea" %} 
-            {{ include("Util/Fields/Textarea.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Textarea.html", {'name':name, 'el':el, 'data':form.data})}}
         {% elseif el.type == "File" %} 
-            {{ include("Util/Fields/File.html", {'name':name, 'el':el, 'data':data}) }}
+            {{ include("Util/Fields/File.html", {'name':name, 'el':el, 'data':form.data}) }}
         {% elseif el.type == "Select" %} 
-            {{ include("Util/Fields/Select.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Select.html", {'name':name, 'el':el, 'data':form.data})}}
         {% elseif el.type == "Checkbox" %} 
-            {{ include("Util/Fields/Checkbox.html", {'name':name, 'el':el, 'data':data})}}
+            {{ include("Util/Fields/Checkbox.html", {'name':name, 'el':el, 'data':form.data})}}
         {% endif %}
     {% endfor %}
-    {{ include("Util/Fields/Button.html", {'name':'_sendbutton', 'el':{'title': 'Gönder'}, 'data':data})}}
+    {{ include("Util/Fields/Button.html", {'name':'_sendbutton', 'el':{'title': 'Gönder'}, 'data':form.data})}}
 </form>

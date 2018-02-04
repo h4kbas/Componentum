@@ -104,7 +104,7 @@ class Plugin{
     }
 
     public function findById($id){
-        return DB::findOne($table, 'id = ?', [$id]);
+        return DB::findOne($this->table, 'id = ?', [$id]);
     }
 
     public function query(){

@@ -1,4 +1,4 @@
 <label for="">
     {{el.title}}
-    <input placeholder="{{el.title}}" type="checkbox" name="{{name}}" id="{{el.id}}" {{i[el.resolve.return] == (data[name] ?? el.value  ?? '') ? 'checked' : ''}} {{el.required ? 'required' : ''}}>
+    <input placeholder="{{el.title}}" type="checkbox" name="{{name}}" id="{{el.id}}" {{data[name] ? 'checked ' :  el.value  ? 'checked ' : ''}} {{el.required ? 'required' : ''}}>
 </label>

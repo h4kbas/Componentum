@@ -25,6 +25,10 @@ class Map {
         if(isset($this->map['map'])){
             if(isset($this->map['map'][$this->action]))
                 $this->action = $this->map['map'][$this->action];
+            else{
+                if($other = array_search($this->action, $this->map['map']))
+                    Route::abort(404);
+            }
         }
     }
 }

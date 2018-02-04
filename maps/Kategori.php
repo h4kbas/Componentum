@@ -5,5 +5,11 @@ return [
     'map' => [
         'Olustur' => 'Create',
         'Guncelle' => 'Update'
+    ],
+    'use' => [
+        'user' => 'Kullanici'
+    ],
+    'filter' => [
+        'Auth/User' =>  ['Update']
     ]
 ];

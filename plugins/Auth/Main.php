@@ -1,10 +1,10 @@
-<?php namespace Plugins\Category;
+<?php namespace Plugins\Auth;
 
 use Just\Core\Plugin,
     Just\Core\Route;
 
 class Main extends Plugin{
-    const tablesuffix = "category";
+    const tablesuffix = "user";
 
     public function getIndex(){  
     }
@@ -13,18 +13,18 @@ class Main extends Plugin{
         $this->template->render('Create', [
             'form' => [
                 'url' => $this->url("create"),
-                'elements' => $this->model('Category')
+                'elements' => $this->model('User')
             ]
         ]);
     }
 
     public function postCreate(){
         try{
-            $this->createFromRequest('Category');
-            $this->success('Category', 'created');
+            $this->createFromRequest('User');
+            $this->success('User', 'created');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('User', $ex);
         }
         $this->redirect('create');
     }
@@ -34,7 +34,7 @@ class Main extends Plugin{
             $this->template->render('Update', [
                 'form' => [
                     'url' => $this->url("update/$id"),
-                    'elements' => $this->model('Category'),
+                    'elements' => $this->model('User'),
                     'data' => $data
                 ]
             ]);
@@ -45,11 +45,11 @@ class Main extends Plugin{
 
     public function postUpdate($id){
         try{
-            $this->updateFromRequest('Category', $id);
-            $this->success('Category', 'updated');
+            $this->updateFromRequest('User', $id);
+            $this->success('User', 'updated');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('User', $ex);
         }
         $this->redirect('update');
 
@@ -57,10 +57,10 @@ class Main extends Plugin{
     public function postDelete($id){
         try{
             $this->deleteById($id);
-            $this->success('Category', 'deleted');
+            $this->success('User', 'deleted');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('User', $ex);
         }
         $this->redirect('delete');
     }
