@@ -1,0 +1,5 @@
+<select name="{{name}}" id="{{el.id}}">
+    {% for i in el.resolve.sequence %}
+        <option value="{{i[el.resolve.return]}}" {{i[el.resolve.return] == (data[name] ?? el.value  ?? '') ? 'selected' : ''}}>{{i[el.resolve.display]}}</option>
+    {% endfor %}
+</select>
