@@ -37,8 +37,8 @@ class Plugin{
             }
             if($rel && isset($v['relation'])){
                 $select = $v['resolve']['display'].','.$v['resolve']['return'];
-                if(isset($this->map['use']) && isset($this->map['use'][$v['relation']['table']]))
-                $v['relation']['table'] = $this->map['use'][$v['relation']['table']].'_'.$v['relation']['table'];
+                if(isset($this->map['use']) && isset($this->map['use'][strtolower($v['relation']['table'])]))
+                $v['relation']['table'] = strtolower($this->map['use'][strtolower($v['relation']['table'])]).'_'.$v['relation']['table'];
 				$v['resolve']['sequence'] = DB::getAll("Select $select  From {$v['relation']['table']}");
 			}
         }

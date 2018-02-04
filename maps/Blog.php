@@ -3,6 +3,6 @@
 return [
     'is' => 'Blog',
     'use' => [
-        'category' => 'kategori'
+        'category' => 'Kategori'
     ]
 ];
