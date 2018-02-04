@@ -3,3 +3,4 @@ composer.phar
 !/vendor/just
 !/vendor/*.php
 composer.lock
+*.pmc
