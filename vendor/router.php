@@ -28,10 +28,16 @@ if(is_callable([$_JUST['map']->plugin, $_JUST['method'].$_JUST['map']->action]))
     $result = true;
     if(isset($_JUST['map']->map['filter'])){
         foreach($_JUST['map']->map['filter'] as $f => $acs){
-            if(in_array($_JUST['map']->action, $acs)){
+            if($acs[0] == "*" || 
+                (
+                    (isset($acs[0]['only']) && in_array($_JUST['map']->action, $acs[0]['only'])) 
+                        || 
+                    (isset($acs[0]['except']) && !in_array($_JUST['map']->action, $acs[0]['except'])) 
+                )
+            ){
                 $f = explode('/', $f);
                 $fname = "Plugins\\{$f[0]}\\Filters\\{$f[1]}";
-                $filter = new $fname();
+                $filter = new $fname($acs, $_JUST['map']->plugin);
                 if($r = $filter->handle())
                     $result = $result && $r;
                 else{

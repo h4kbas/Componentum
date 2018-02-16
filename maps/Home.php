@@ -1,5 +1,9 @@
 <?php
 
 return [
-    'is' => 'Category'
+    'is' => 'Home',
+
+    'use' => [
+        'homepage' => 'Home'
+    ]
 ];

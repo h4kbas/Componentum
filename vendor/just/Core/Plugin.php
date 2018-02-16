@@ -12,6 +12,7 @@ class Plugin{
         else
             return null;
     }
+    
     public function error($lang, $ex){
         Session::flash('@error', $this->lang($lang, $ex->getMessage()));
     }
@@ -64,7 +65,7 @@ class Plugin{
                 
             if($rel && isset($v['relation'])){
                 $select = $v['resolve']['display'].','.$v['resolve']['return'];
-                if($use = $this->use($v['relation']['table']))
+                if($use = $this->ref($v['relation']['table']))
                     $v['relation']['table'] = $use.'_'.$v['relation']['table'];
 				$v['resolve']['sequence'] = DB::getAll("Select $select  From {$v['relation']['table']}");
 			}
@@ -140,9 +141,9 @@ class Plugin{
         if(!isset($this->langs[$m])){
             $lang = "{$this->path}/Langs/".ucwords(Session::get('lang'))."/".ucwords($m).".php";
             if(file_exists($lang))
-            $this->langs[$m] = require_once $lang;
+                $this->langs[$m] = require_once $lang;
             else
-                throw new \Exception('Lang Not Found');
+                return "$m.$g";
         } 
         if(isset($this->langs[$m][$g]))
             return $this->langs[$m][$g];

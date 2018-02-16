@@ -5,10 +5,10 @@ use Just\Core\Filter;
 class User extends Filter {
     
     function handle(){
-        return false;
+        return Session::has($this->plugin->table);
     }
 
     function fallback(){
-        echo "Hatalı";
+        $this->plugin->redirect($this->use('fallback') ?: '/', false);
     }
 }

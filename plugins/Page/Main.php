@@ -19,7 +19,7 @@ class Main extends Plugin{
         }
         else
             Route::abort(404);
-      }
+    }
   
     public function getAll($start = null, $end = null){
         $q = $this->query();
@@ -28,10 +28,7 @@ class Main extends Plugin{
             'pages' => $q->take()
         ]);  
     }
-
-    public function getIndex(){  
-    }
-
+    
     public function getCreate(){
         $this->template->render('Create', [
             'form' => [
@@ -77,6 +74,7 @@ class Main extends Plugin{
         $this->redirect('update');
 
     }
+
     public function postDelete($id){
         try{
             $this->deleteById($id);
