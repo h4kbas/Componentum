@@ -1,4 +1,7 @@
 <?php namespace Just\Core;
+
+use RedBeanPHP\R as DB;
+
 class Request{
 
 	static function get($t) {
@@ -55,7 +58,7 @@ class Request{
 		}
 	}
 
-	static function fill($fields, $def, $checkreq = true){
+	static function fill($table, $fields, $def, $checkreq = true){
 		foreach($fields as $r => $v){
 			if(isset($v['protected']) && $v['protected']){
 				continue;
@@ -64,18 +67,23 @@ class Request{
 			if(isset($v['default'])){
 				$def[$r] = $v['default'];
 			}
+
+			if(isset($v['unique']) && $v['unique']){
+				if(DB::findOne($table, "$r = ?", [self::get($r)]))
+					throw new \Exception('uniquefields');
+			}
 			
 			if($checkreq && isset($v['required']) && $v['required']){
 				if((self::has($r) && self::get($r) != '') || isset($_FILES[$r])){
 					if(!self::processfill($r, $v, $def))
-						return false;
+					throw new \Exception('emptyfields');
 				}
 				else
-					return false;
+					throw new \Exception('emptyfields');
 			}
 			else if(self::has($r) || isset($_FILES[$r]))
 				if(!self::processfill($r, $v, $def))
-				return false;
+					throw new \Exception('emptyfields');
 		}
 		return $def;
 	}

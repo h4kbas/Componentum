@@ -1,24 +1,54 @@
 <?php namespace Plugins\Auth;
 
 use Just\Core\Plugin,
-    Just\Core\Route;
+    Just\Core\Route,
+    Just\Core\Request;
 
 class Main extends Plugin{
     const tablesuffix = "user";
 
-    public function getIndex(){  
+    public function getLogin(){  
+        $this->template->render('Login', [
+            'form' => [
+                'url' => $this->url("login"),
+                'elements' => $this->model('User', false, [], ['username', 'password']),
+            ]
+        ]);
     }
 
-    public function getCreate(){
-        $this->template->render('Create', [
+    public function postLogin(){
+       try{
+            $q = $this->query();
+            $res = $q->where('username', '=', Request::get('username'))
+                     ->where('password', '=', Request::get('password'))
+                     ->limit(1)
+                     ->take();
+            die();
+            if(!$res)
+                throw new \Exception('loginfailed');
+            Session::set($this->table, $res);
+            $this->success('User', 'loggedin');
+            if($use = $this->use('redirectAfterLogin'))
+                $this->redirect($use, false);
+            else
+                $this->redirect('profile');
+        }
+        catch(\Exception $ex){
+            $this->error('User', $ex);
+            $this->redirect('login');
+        }
+    }
+
+    public function getRegister(){
+        $this->template->render('Register', [
             'form' => [
-                'url' => $this->url("create"),
+                'url' => $this->url("register"),
                 'elements' => $this->model('User')
             ]
         ]);
     }
 
-    public function postCreate(){
+    public function postRegister(){
         try{
             $this->createFromRequest('User');
             $this->success('User', 'created');
@@ -26,14 +56,14 @@ class Main extends Plugin{
         catch(\Exception $ex){
             $this->error('User', $ex);
         }
-        $this->redirect('create');
+        $this->redirect('register');
     }
 
     public function getUpdate($id){
         if($data = $this->findById($id)){
             $this->template->render('Update', [
                 'form' => [
-                    'url' => $this->url("update/$id"),
+                    'url' => $this->url("update", $id),
                     'elements' => $this->model('User'),
                     'data' => $data
                 ]

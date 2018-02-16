@@ -19,7 +19,6 @@ else{
     ini_set('log_errors', 'On');
     ini_set('error_log', 'tmp/logs/error.log');
 }
-
 DB::ext('prep', function( $type ){ 
     return DB::getRedBean()->dispense( $type ); 
 });

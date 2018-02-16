@@ -1,5 +1,8 @@
 <?php
 
 return [
-    'is' => 'Auth'
+    'is' => 'Auth',
+    'use' => [
+        'redirectAfterLogin' => '/Blog/All'
+    ]
 ];

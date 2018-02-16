@@ -1,15 +1,20 @@
-<?php namespace Plugins\Category;
+<?php namespace Plugins\Page;
 
 use Just\Core\Plugin,
     Just\Core\Route;
 
 class Main extends Plugin{
-    const tablesuffix = "category";
+    const tablesuffix = "page";
 
-    public function getGet($id){
-        if($data = $this->findById($id)){
+    public function getGet($slug){
+        $q = $this->query();
+        $res = $q
+                ->limit(1)
+                ->where('slug', '=', $slug)
+                -take();
+        if($res){
           $this->template->render('Get', [
-              'category' => $data
+              'page' => $res
           ]);  
         }
         else
@@ -20,7 +25,7 @@ class Main extends Plugin{
         $q = $this->query();
         $q->limit($start, $end);
         $this->template->render('Get', [
-            'categories' => $q->take()
+            'pages' => $q->take()
         ]);  
     }
 
@@ -31,18 +36,18 @@ class Main extends Plugin{
         $this->template->render('Create', [
             'form' => [
                 'url' => $this->url("create"),
-                'elements' => $this->model('Category')
+                'elements' => $this->model('Page')
             ]
         ]);
     }
 
     public function postCreate(){
         try{
-            $this->createFromRequest('Category');
-            $this->success('Category', 'created');
+            $this->createFromRequest('Page');
+            $this->success('Page', 'created');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('Page', $ex);
         }
         $this->redirect('create');
     }
@@ -52,7 +57,7 @@ class Main extends Plugin{
             $this->template->render('Update', [
                 'form' => [
                     'url' => $this->url("update", $id),
-                    'elements' => $this->model('Category'),
+                    'elements' => $this->model('Page'),
                     'data' => $data
                 ]
             ]);
@@ -63,11 +68,11 @@ class Main extends Plugin{
 
     public function postUpdate($id){
         try{
-            $this->updateFromRequest('Category', $id);
-            $this->success('Category', 'updated');
+            $this->updateFromRequest('Page', $id);
+            $this->success('Page', 'updated');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('Page', $ex);
         }
         $this->redirect('update');
 
@@ -75,10 +80,10 @@ class Main extends Plugin{
     public function postDelete($id){
         try{
             $this->deleteById($id);
-            $this->success('Category', 'deleted');
+            $this->success('Page', 'deleted');
         }
         catch(\Exception $ex){
-            $this->error('Category', $ex);
+            $this->error('Page', $ex);
         }
         $this->redirect('delete');
     }

@@ -40,29 +40,30 @@ class Query {
         if(isset($this->query['select'])){
             $select = implode(',', $this->query['select']);
         }
-        $limit = "";
-        if(isset($this->query['limit'])){
-            if($this->query['limit'][0]){
-                $limit = "LIMIT ?"; $fields [] = $this->query['limit'][0];
-            }
-            if($this->query['limit'][1]){
-                $limit .= ", ?"; $fields [] = $this->query['limit'][1];
+        $where = "";
+        if(isset($this->query['where'])){
+            $where = "WHERE ";
+            foreach($this->query['where'] as $k => $w){
+                $where .= "{$w[0]} {$w[1]} ?"; $fields [] = $w[2];
+                if($k < count($this->query['where']) - 1)
+                    if($w[3]) $where .= " AND ";
+                    else $where .= " OR ";
             }
         }
         $orderby = "";
         if(isset($this->query['orderby'])){
             $orderby = "ORDER BY {$this->query['orderby'][0]} {$this->query['orderby'][1]}";
         }
-        $where = "";
-        if(isset($this->query['where'])){
-            $where = "WHERE ";
-            foreach($this->query['where'] as $k => $w){
-                $where .= "{$w[0]} {$w[1]} ?"; $fields [] = $w[2];
-                if($k < count($this->query['where']))
-                    if($w[3]) $where .= " AND ";
-                    else $where .= " OR ";
+        $limit = "";
+        if(isset($this->query['limit'])){
+            if($this->query['limit'][0]){
+                $limit = "LIMIT ?"; $fields [] = intval($this->query['limit'][0]);
+            }
+            if($this->query['limit'][1]){
+                $limit .= ", ?"; $fields [] = intval($this->query['limit'][1]);
             }
         }
-        return DB::getAll("SELECT $select FROM {$this->query['table']} $where $orderby $limit", $fields);
+        $items = DB::getAll("SELECT $select FROM {$this->query['table']} $where $orderby $limit", $fields);
+        return count($items) == 1 ? $items[0] : $items;
     }
 }

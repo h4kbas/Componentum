@@ -6,7 +6,22 @@ use Just\Core\Plugin,
 class Main extends Plugin{
     const tablesuffix = "blog";
 
-    public function getIndex(){  
+    public function getGet($id){
+      if($data = $this->findById($id)){
+        $this->template->render('Get', [
+            'post' => $data
+        ]);  
+      }
+      else
+          Route::abort(404);
+    }
+
+    public function getAll($start = null, $end = null){
+        $q = $this->query();
+        $q->limit($start, $end);
+        $this->template->render('Get', [
+            'posts' => $q->take()
+        ]);  
     }
 
     public function getCreate(){
@@ -33,7 +48,7 @@ class Main extends Plugin{
         if($data = $this->findById($id)){
             $this->template->render('Update', [
                 'form' => [
-                    'url' => $this->url("update/$id"),
+                    'url' => $this->url("update", $id),
                     'elements' => $this->model('Post', true),
                     'data' => $data
                 ]

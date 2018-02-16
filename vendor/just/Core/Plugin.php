@@ -5,6 +5,13 @@ use Just\Util\Query;
 class Plugin{
     public $models;
 
+    public function use($u){
+        if(isset($this->map['use']) && isset($this->map['use'][strtolower($u)])){
+            return $this->map['use'][strtolower($u)];
+        }
+        else
+            return null;
+    }
     public function error($lang, $ex){
         Session::flash('@error', $this->lang($lang, $ex->getMessage()));
     }
@@ -13,15 +20,26 @@ class Plugin{
         Session::flash('@success', $this->lang($lang, $ex));
     }
 
-    public function url($x){
+    public function url($x, ...$y){
+        $url = "";
         if(isset($this->map['map'])){
             if($f = array_search(ucwords($x), $this->map['map']))
-                return "/{$this->controller}/$f";
+                $url = "/{$this->controller}/$f";
+            else 
+                $url = "/{$this->controller}/$x";   
         }
-        return "/{$this->controller}/$x";   
+        else 
+            $url = "/{$this->controller}/$x";   
+        foreach ($y as $u) {
+            $url .= "/$u";
+        }
+        return $url;
     }
-    public function redirect($x){
-        return Route::redirect($this->url($x));
+    public function redirect($x, $url = true){
+        if($url)
+            return Route::redirect($this->url($x));
+        else
+            return Route::redirect($x);
     }
 
     public function translate($v){
@@ -30,28 +48,37 @@ class Plugin{
             return $this->lang($t[0], $t[1]);
         }
     }
-    private function processModel($model, $rel = false){
+    private function processModel($model, $rel, $ex, $only){
         foreach($model as $r => &$v){
-            if(isset($v['title'])){
-                $v['title'] = $this->translate($v['title']);
+            
+            if(!empty($ex) && in_array($r, $ex)){
+                unset($model[$r]);
+                continue;
             }
+            if(!empty($only) && !in_array($r, $only)) {
+                unset($model[$r]);
+                continue;
+            }
+            if(isset($v['title']))
+                $v['title'] = $this->translate($v['title']);
+                
             if($rel && isset($v['relation'])){
                 $select = $v['resolve']['display'].','.$v['resolve']['return'];
-                if(isset($this->map['use']) && isset($this->map['use'][strtolower($v['relation']['table'])]))
-                $v['relation']['table'] = strtolower($this->map['use'][strtolower($v['relation']['table'])]).'_'.$v['relation']['table'];
+                if($use = $this->use($v['relation']['table']))
+                    $v['relation']['table'] = $use.'_'.$v['relation']['table'];
 				$v['resolve']['sequence'] = DB::getAll("Select $select  From {$v['relation']['table']}");
 			}
         }
         return $model;
     }
 
-    public function model($m, $rel = false){
+    public function model($m, $rel = false, $ex = [], $only = []){
         if(isset($this->models[$m])) 
             return $this->models[$m]; 
         $model = "{$this->path}/Models/$m.php";
         if(file_exists($model)){
             $this->models[$m] = require_once $model;
-            return $this->processModel($this->models[$m], $rel);
+            return $this->processModel($this->models[$m], $rel, $ex, $only);
         }
         else
             throw new \Exception('Model Not Found');
@@ -68,10 +95,8 @@ class Plugin{
                 $ex[$k] = '';
 			}
         }
-        if($ret = Request::fill( array_diff_key($model, $ex), DB::prep($this->table)))
-            return DB::store($ret);
-        else
-            throw new \Exception('emptyfields');
+        $ret = Request::fill($this->table, array_diff_key($model, $ex), DB::prep($this->table));
+        return DB::store($ret);
     }
 
     public function updateFromRequest($m, $id){
@@ -86,10 +111,8 @@ class Plugin{
                     $ex[$k] = '';
                 }
             }
-            if($ret = Request::fill( array_diff_key($model, $ex), $def, false))
-                return DB::store($ret);
-            else
-                throw new \Exception('emptyfields');
+            $ret = Request::fill($this->table, array_diff_key($model, $ex), $def, false);
+            return DB::store($ret);
         }
         else
             throw new \Exception('notfound');
